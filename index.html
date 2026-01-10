@@ -1,244 +1,272 @@
-import React, { useState } from 'react';
-import { Sparkles, Gift, RefreshCw, Star, Moon, Zap } from 'lucide-react';
-
-const MysteryBox = () => {
-  const [selectedBox, setSelectedBox] = useState(null);
-  const [revealedPrize, setRevealedPrize] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [openedBoxes, setOpenedBoxes] = useState([]);
-
-  const prizes = [
-    {
-      id: 1,
-      title: "Rp 25.000",
-      content: "Selamat! Anda mendapatkan uang tunai sebesar Rp 25.000! Lumayan untuk jajan atau bensin hari ini!",
-      category: "Uang Tunai",
-      icon: "💵",
-      color: "from-green-400 to-emerald-500",
-      boxColor: "from-green-400 to-green-600"
-    },
-    {
-      id: 2,
-      title: "Rp 50.000",
-      content: "Wah, beruntung! Anda mendapatkan uang tunai Rp 50.000! Bisa untuk makan enak atau nabung!",
-      category: "Uang Tunai",
-      icon: "💵",
-      color: "from-green-500 to-emerald-600",
-      boxColor: "from-emerald-400 to-emerald-600"
-    },
-    {
-      id: 3,
-      title: "Rp 75.000",
-      content: "Keren! Rezeki Rp 75.000 datang! Gunakan dengan bijak ya!",
-      category: "Uang Tunai",
-      icon: "💵",
-      color: "from-green-600 to-teal-600",
-      boxColor: "from-teal-400 to-teal-600"
-    },
-    {
-      id: 4,
-      title: "Rp 100.000",
-      content: "Mantap! Anda berhasil mendapat Rp 100.000! Seperempat juta sudah di tangan!",
-      category: "Uang Tunai",
-      icon: "💸",
-      color: "from-blue-500 to-cyan-500",
-      boxColor: "from-blue-400 to-blue-600"
-    },
-    {
-      id: 5,
-      title: "Rp 150.000",
-      content: "Luar biasa! Rejeki Rp 150.000 menghampiri Anda! Hari yang beruntung!",
-      category: "Uang Tunai",
-      icon: "💸",
-      color: "from-blue-600 to-cyan-600",
-      boxColor: "from-cyan-400 to-cyan-600"
-    },
-    {
-      id: 6,
-      title: "Rp 200.000",
-      content: "Wow! Jackpot Rp 200.000! Ini rezeki yang sangat bagus!",
-      category: "Uang Tunai",
-      icon: "💰",
-      color: "from-purple-500 to-pink-500",
-      boxColor: "from-purple-400 to-purple-600"
-    },
-    {
-      id: 7,
-      title: "Emas 1 Gram",
-      content: "SELAMAT! Anda mendapatkan EMAS 1 GRAM! Investasi yang berharga untuk masa depan!",
-      category: "Hadiah Spesial",
-      icon: "🥇",
-      color: "from-yellow-400 to-amber-500",
-      boxColor: "from-yellow-400 to-amber-500"
-    },
-    {
-      id: 8,
-      title: "iPhone 17 Pro Max",
-      content: "GRAND PRIZE! 🎉 ANDA MENDAPATKAN iPHONE 17 PRO MAX 1 UNIT! Ini adalah hadiah terbesar! Selamat ya!",
-      category: "Grand Prize",
-      icon: "📱",
-      color: "from-indigo-600 to-purple-700",
-      boxColor: "from-indigo-500 to-purple-700"
-    }
-  ];
-
-  const handleBoxClick = (prize) => {
-    if (isAnimating || openedBoxes.includes(prize.id)) return;
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kotak Hadiah Misteri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(-5px);
+            }
+            50% {
+                transform: translateY(5px);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .animate-spin {
+            animation: spin 3s linear infinite;
+        }
+        
+        .box-hover:hover {
+            transform: scale(1.05) translateY(-8px);
+        }
+        
+        .box-selected {
+            transform: scale(1.1) rotate(6deg);
+        }
+        
+        .box-opened {
+            opacity: 0.3;
+            transform: scale(0.9);
+            cursor: not-allowed;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
     
-    setIsAnimating(true);
-    setSelectedBox(prize.id);
-    
-    setTimeout(() => {
-      setRevealedPrize(prize);
-      setOpenedBoxes([...openedBoxes, prize.id]);
-      setIsAnimating(false);
-    }, 800);
-  };
+    <div class="absolute top-20 left-10 text-yellow-300 opacity-20 text-4xl animate-pulse">⭐</div>
+    <div class="absolute top-40 right-20 text-purple-300 opacity-20 text-5xl animate-pulse">🌙</div>
+    <div class="absolute bottom-20 left-1/4 text-pink-300 opacity-20 text-4xl animate-pulse">⚡</div>
+    <div class="absolute bottom-40 right-1/3 text-blue-300 opacity-20 text-4xl animate-pulse">✨</div>
 
-  const handleReset = () => {
-    setSelectedBox(null);
-    setRevealedPrize(null);
-    setOpenedBoxes([]);
-  };
-
-  const handleClose = () => {
-    setRevealedPrize(null);
-    setSelectedBox(null);
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4 relative">
-      
-      {/* Background Stars */}
-      <div className="absolute top-20 left-10 text-yellow-300 opacity-20">
-        <Star size={40} />
-      </div>
-      <div className="absolute top-40 right-20 text-purple-300 opacity-20">
-        <Moon size={50} />
-      </div>
-      <div className="absolute bottom-20 left-1/4 text-pink-300 opacity-20">
-        <Zap size={35} />
-      </div>
-      <div className="absolute bottom-40 right-1/3 text-blue-300 opacity-20">
-        <Sparkles size={45} />
-      </div>
-
-      <div className="max-w-6xl w-full relative z-10">
-        {!revealedPrize ? (
-          <div className="text-center">
+    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
+        <div class="max-w-6xl w-full">
             
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-              🎁 Kotak Hadiah Misteri 🎁
-            </h1>
-            <p className="text-purple-200 mb-3 text-lg">
-              Pilih salah satu kotak dan menangkan hadiah menarik! ✨
-            </p>
-            <p className="text-yellow-300 mb-8 text-md font-semibold">
-              Hadiah: Uang Tunai • Emas • iPhone 17 Pro Max!
-            </p>
+            <div id="mainView" class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-pulse">
+                    🎁 Kotak Hadiah Misteri 🎁
+                </h1>
+                <p class="text-purple-200 mb-3 text-lg">
+                    Pilih salah satu kotak dan menangkan hadiah menarik! ✨
+                </p>
+                <p class="text-yellow-300 mb-8 text-md font-semibold">
+                    Hadiah: Uang Tunai • Emas • iPhone 17 Pro Max!
+                </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
-              {prizes.map((prize) => {
-                const isOpened = openedBoxes.includes(prize.id);
-                const isSelected = selectedBox === prize.id && isAnimating;
-                
-                return (
-                  <div
-                    key={prize.id}
-                    onClick={() => handleBoxClick(prize)}
-                    className={`relative transition-all duration-500 ${
-                      isOpened 
-                        ? 'opacity-30 scale-90' 
-                        : 'cursor-pointer hover:scale-105 hover:-translate-y-2'
-                    } ${isSelected ? 'scale-110 rotate-6' : ''}`}
-                  >
-                    <div className={`aspect-square bg-gradient-to-br ${prize.boxColor} rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden border-4 border-yellow-300`}>
-                      
-                      {isOpened ? (
-                        <div className="relative text-center">
-                          <div className="text-5xl md:text-6xl mb-2">{prize.icon}</div>
-                          <div className="text-white font-bold text-xs md:text-sm px-2">{prize.title}</div>
-                        </div>
-                      ) : (
-                        <div className="relative text-center">
-                          <Gift size={50} className="text-white mb-2 mx-auto" />
-                          <div className="text-white font-bold text-2xl">?</div>
-                        </div>
-                      )}
+                <div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
+                </div>
 
-                      {!isOpened && (
-                        <>
-                          <Sparkles className="absolute top-2 right-2 text-yellow-200" size={20} />
-                          <Sparkles className="absolute bottom-2 left-2 text-yellow-200" size={20} />
-                        </>
-                      )}
-                    </div>
-
-                    <div className="absolute -top-2 -left-2 w-8 h-8 bg-white rounded-full flex items-center justify-center text-purple-700 font-bold shadow-lg border-2 border-yellow-300">
-                      {prize.id}
-                    </div>
-                  </div>
-                );
-              })}
+                <button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">
+                    🔄 Reset Semua Kotak
+                </button>
             </div>
 
-            {openedBoxes.length > 0 && (
-              <button
-                onClick={handleReset}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105"
-              >
-                <RefreshCw size={24} />
-                Reset Semua Kotak
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className={`bg-gradient-to-br ${revealedPrize.color} rounded-3xl p-8 md:p-12 shadow-2xl border-4 border-yellow-300 relative`}>
-            
-            <div className="absolute top-0 left-1/4 text-yellow-300 text-4xl">🎉</div>
-            <div className="absolute top-0 right-1/4 text-yellow-300 text-4xl">🎊</div>
-            <div className="absolute bottom-1/4 left-1/3 text-white text-3xl">⭐</div>
-            <div className="absolute top-1/2 right-1/4 text-white text-3xl">✨</div>
-
-            <div className="flex items-center justify-between mb-6 relative z-10">
-              <span className="px-4 py-2 bg-white/30 rounded-full text-white text-sm font-bold backdrop-blur-sm border-2 border-white/50 shadow-lg">
-                {revealedPrize.category}
-              </span>
-              <span className="text-6xl md:text-7xl drop-shadow-lg">{revealedPrize.icon}</span>
+            <div id="prizeView" class="hidden fade-in">
             </div>
 
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 drop-shadow-lg text-center relative z-10">
-              {revealedPrize.title}
-            </h2>
-
-            <div className="bg-white/20 rounded-2xl p-6 mb-8 backdrop-blur-sm border-2 border-white/30 shadow-xl relative z-10">
-              <p className="text-white text-lg md:text-xl leading-relaxed font-semibold text-center">
-                {revealedPrize.content}
-              </p>
-            </div>
-
-            <div className="flex gap-4 justify-center relative z-10 flex-wrap">
-              <button
-                onClick={handleClose}
-                className="flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-base md:text-lg"
-              >
-                <Gift size={24} />
-                Pilih Kotak Lain
-              </button>
-              
-              <button
-                onClick={handleReset}
-                className="flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-white/20 backdrop-blur-sm text-white font-bold rounded-full hover:bg-white/30 transition-all duration-300 border-2 border-white/50 hover:scale-105 shadow-xl text-base md:text-lg"
-              >
-                <RefreshCw size={24} />
-                Reset Semua
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
     </div>
-  );
-};
 
-export default MysteryBox;
+    <script>
+        var prizes = [
+            {
+                id: 1,
+                title: "Rp 25.000",
+                content: "Selamat! Anda mendapatkan uang tunai sebesar Rp 25.000! Lumayan untuk jajan atau bensin hari ini!",
+                category: "Uang Tunai",
+                icon: "💵",
+                color: "from-green-400 to-emerald-500",
+                boxColor: "from-green-400 to-green-600"
+            },
+            {
+                id: 2,
+                title: "Rp 50.000",
+                content: "Wah, beruntung! Anda mendapatkan uang tunai Rp 50.000! Bisa untuk makan enak atau nabung!",
+                category: "Uang Tunai",
+                icon: "💵",
+                color: "from-green-500 to-emerald-600",
+                boxColor: "from-emerald-400 to-emerald-600"
+            },
+            {
+                id: 3,
+                title: "Rp 75.000",
+                content: "Keren! Rezeki Rp 75.000 datang! Gunakan dengan bijak ya!",
+                category: "Uang Tunai",
+                icon: "💵",
+                color: "from-green-600 to-teal-600",
+                boxColor: "from-teal-400 to-teal-600"
+            },
+            {
+                id: 4,
+                title: "Rp 100.000",
+                content: "Mantap! Anda berhasil mendapat Rp 100.000! Seperempat juta sudah di tangan!",
+                category: "Uang Tunai",
+                icon: "💸",
+                color: "from-blue-500 to-cyan-500",
+                boxColor: "from-blue-400 to-blue-600"
+            },
+            {
+                id: 5,
+                title: "Rp 150.000",
+                content: "Luar biasa! Rejeki Rp 150.000 menghampiri Anda! Hari yang beruntung!",
+                category: "Uang Tunai",
+                icon: "💸",
+                color: "from-blue-600 to-cyan-600",
+                boxColor: "from-cyan-400 to-cyan-600"
+            },
+            {
+                id: 6,
+                title: "Rp 200.000",
+                content: "Wow! Jackpot Rp 200.000! Ini rezeki yang sangat bagus!",
+                category: "Uang Tunai",
+                icon: "💰",
+                color: "from-purple-500 to-pink-500",
+                boxColor: "from-purple-400 to-purple-600"
+            },
+            {
+                id: 7,
+                title: "Emas 1 Gram",
+                content: "SELAMAT! Anda mendapatkan EMAS 1 GRAM! Investasi yang berharga untuk masa depan!",
+                category: "Hadiah Spesial",
+                icon: "🥇",
+                color: "from-yellow-400 to-amber-500",
+                boxColor: "from-yellow-400 to-amber-500"
+            },
+            {
+                id: 8,
+                title: "iPhone 17 Pro Max",
+                content: "GRAND PRIZE! 🎉 ANDA MENDAPATKAN iPHONE 17 PRO MAX 1 UNIT! Ini adalah hadiah terbesar! Selamat ya!",
+                category: "Grand Prize",
+                icon: "📱",
+                color: "from-indigo-600 to-purple-700",
+                boxColor: "from-indigo-500 to-purple-700"
+            }
+        ];
+
+        var openedBoxes = [];
+        var isAnimating = false;
+
+        function renderBoxes() {
+            var grid = document.getElementById('boxesGrid');
+            grid.innerHTML = '';
+
+            for (var i = 0; i < prizes.length; i++) {
+                var prize = prizes[i];
+                var isOpened = openedBoxes.indexOf(prize.id) !== -1;
+                
+                var boxDiv = document.createElement('div');
+                boxDiv.className = 'relative transition-all duration-500 ' + (isOpened ? 'box-opened' : 'box-hover cursor-pointer');
+                
+                var innerContent = '';
+                if (isOpened) {
+                    innerContent = '<div class="relative text-center"><div class="text-5xl md:text-6xl mb-2">' + prize.icon + '</div><div class="text-white font-bold text-xs md:text-sm px-2">' + prize.title + '</div></div>';
+                } else {
+                    innerContent = '<div class="relative text-center"><div class="text-5xl md:text-6xl text-white mb-2">🎁</div><div class="text-white font-bold text-2xl">?</div></div><div class="absolute top-2 right-2 text-yellow-200 text-xl animate-spin">✨</div><div class="absolute bottom-2 left-2 text-yellow-200 text-xl animate-spin">✨</div>';
+                }
+                
+                boxDiv.innerHTML = '<div class="aspect-square bg-gradient-to-br ' + prize.boxColor + ' rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden border-4 border-yellow-300">' + innerContent + '</div><div class="absolute -top-2 -left-2 w-8 h-8 bg-white rounded-full flex items-center justify-center text-purple-700 font-bold shadow-lg border-2 border-yellow-300">' + prize.id + '</div>';
+
+                if (!isOpened) {
+                    (function(currentPrize) {
+                        boxDiv.onclick = function() {
+                            handleBoxClick(currentPrize);
+                        };
+                    })(prize);
+                }
+
+                grid.appendChild(boxDiv);
+            }
+
+            var resetBtn = document.getElementById('resetBtn');
+            if (openedBoxes.length > 0) {
+                resetBtn.classList.remove('hidden');
+            } else {
+                resetBtn.classList.add('hidden');
+            }
+        }
+
+        function handleBoxClick(prize) {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            
+            var boxes = document.querySelectorAll('#boxesGrid > div');
+            boxes[prize.id - 1].classList.add('box-selected');
+            
+            setTimeout(function() {
+                openedBoxes.push(prize.id);
+                showPrize(prize);
+                isAnimating = false;
+            }, 800);
+        }
+
+        function showPrize(prize) {
+            var mainView = document.getElementById('mainView');
+            var prizeView = document.getElementById('prizeView');
+            
+            mainView.classList.add('hidden');
+            prizeView.classList.remove('hidden');
+            
+            prizeView.innerHTML = '<div class="bg-gradient-to-br ' + prize.color + ' rounded-3xl p-8 md:p-12 shadow-2xl border-4 border-yellow-300 relative fade-in"><div class="absolute top-0 left-1/4 text-yellow-300 text-4xl animate-bounce">🎉</div><div class="absolute top-0 right-1/4 text-yellow-300 text-4xl animate-bounce">🎊</div><div class="absolute bottom-1/4 left-1/3 text-white text-3xl animate-bounce">⭐</div><div class="absolute top-1/2 right-1/4 text-white text-3xl animate-bounce">✨</div><div class="flex items-center justify-between mb-6 relative z-10"><span class="px-4 py-2 bg-white/30 rounded-full text-white text-sm font-bold backdrop-blur-sm border-2 border-white/50 shadow-lg">' + prize.category + '</span><span class="text-6xl md:text-7xl drop-shadow-lg animate-bounce">' + prize.icon + '</span></div><h2 class="text-3xl md:text-5xl font-black text-white mb-6 drop-shadow-lg text-center relative z-10">' + prize.title + '</h2><div class="bg-white/20 rounded-2xl p-6 mb-8 backdrop-blur-sm border-2 border-white/30 shadow-xl relative z-10"><p class="text-white text-lg md:text-xl leading-relaxed font-semibold text-center">' + prize.content + '</p></div><div class="flex gap-4 justify-center relative z-10 flex-wrap"><button onclick="closePrize()" class="flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-base md:text-lg">🎁 Pilih Kotak Lain</button><button onclick="resetAll()" class="flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-white/20 backdrop-blur-sm text-white font-bold rounded-full hover:bg-white/30 transition-all duration-300 border-2 border-white/50 hover:scale-105 shadow-xl text-base md:text-lg">🔄 Reset Semua</button></div></div>';
+        }
+
+        function closePrize() {
+            var mainView = document.getElementById('mainView');
+            var prizeView = document.getElementById('prizeView');
+            
+            prizeView.classList.add('hidden');
+            mainView.classList.remove('hidden');
+            
+            renderBoxes();
+        }
+
+        function resetAll() {
+            openedBoxes = [];
+            closePrize();
+        }
+
+        document.getElementById('resetBtn').onclick = resetAll;
+        renderBoxes();
+    </script>
+</body>
+</html>
