@@ -85,7 +85,7 @@
             <!-- Login View -->
             <div id="loginView" class="text-center">
                 <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-pulse">
-                    WAWASAN 4D KOTAK HADIAH
+                    🎁 Kotak Hadiah Misteri 🎁
                 </h1>
                 <p class="text-purple-200 mb-8 text-lg">
                     Masukkan User ID Anda untuk mulai bermain! ✨
@@ -244,6 +244,18 @@
         var isAnimating = false;
         var currentUserId = '';
         var usedUserIds = [];
+        var shuffledPrizes = [];
+
+        function shuffleArray(array) {
+            var newArray = array.slice();
+            for (var i = newArray.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = newArray[i];
+                newArray[i] = newArray[j];
+                newArray[j] = temp;
+            }
+            return newArray;
+        }
 
         function loadUsedUserIds() {
             var stored = localStorage.getItem('usedUserIds');
@@ -278,6 +290,11 @@
             currentUserId = userId;
             saveUsedUserId(userId);
             
+            shuffledPrizes = shuffleArray(prizes);
+            for (var i = 0; i < shuffledPrizes.length; i++) {
+                shuffledPrizes[i].displayId = i + 1;
+            }
+            
             var loginView = document.getElementById('loginView');
             var mainView = document.getElementById('mainView');
             
@@ -292,9 +309,9 @@
             var grid = document.getElementById('boxesGrid');
             grid.innerHTML = '';
 
-            for (var i = 0; i < prizes.length; i++) {
-                var prize = prizes[i];
-                var isOpened = openedBoxes.indexOf(prize.id) !== -1;
+            for (var i = 0; i < shuffledPrizes.length; i++) {
+                var prize = shuffledPrizes[i];
+                var isOpened = openedBoxes.indexOf(prize.displayId) !== -1;
                 
                 var boxDiv = document.createElement('div');
                 boxDiv.className = 'relative transition-all duration-500 ' + (isOpened ? 'box-opened' : 'box-hover cursor-pointer');
@@ -306,7 +323,7 @@
                     innerContent = '<div class="relative text-center"><div class="text-5xl md:text-6xl text-white mb-2">🎁</div><div class="text-white font-bold text-2xl">?</div></div><div class="absolute top-2 right-2 text-yellow-200 text-xl animate-spin">✨</div><div class="absolute bottom-2 left-2 text-yellow-200 text-xl animate-spin">✨</div>';
                 }
                 
-                boxDiv.innerHTML = '<div class="aspect-square bg-gradient-to-br ' + prize.boxColor + ' rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden border-4 border-yellow-300">' + innerContent + '</div><div class="absolute -top-2 -left-2 w-8 h-8 bg-white rounded-full flex items-center justify-center text-purple-700 font-bold shadow-lg border-2 border-yellow-300">' + prize.id + '</div>';
+                boxDiv.innerHTML = '<div class="aspect-square bg-gradient-to-br ' + prize.boxColor + ' rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden border-4 border-yellow-300">' + innerContent + '</div>';
 
                 if (!isOpened) {
                     (function(currentPrize) {
@@ -333,10 +350,20 @@
             isAnimating = true;
             
             var boxes = document.querySelectorAll('#boxesGrid > div');
-            boxes[prize.id - 1].classList.add('box-selected');
+            var boxIndex = -1;
+            for (var i = 0; i < shuffledPrizes.length; i++) {
+                if (shuffledPrizes[i].displayId === prize.displayId) {
+                    boxIndex = i;
+                    break;
+                }
+            }
+            
+            if (boxIndex !== -1) {
+                boxes[boxIndex].classList.add('box-selected');
+            }
             
             setTimeout(function() {
-                openedBoxes.push(prize.id);
+                openedBoxes.push(prize.displayId);
                 
                 var actualPrize = prize;
                 if (!prize.isReal) {
@@ -387,7 +414,7 @@
                 var prize = prizes[i];
                 var realBadge = prize.isReal ? '<span class="ml-2 px-2 py-1 bg-green-500 text-white text-xs rounded-full">✓ Hadiah Asli</span>' : '<span class="ml-2 px-2 py-1 bg-gray-500/50 text-white text-xs rounded-full">Display Only</span>';
                 
-                prizesHTML += '<div class="bg-gradient-to-br ' + prize.color + ' rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50"><div class="flex items-center justify-between mb-4"><div class="flex items-center"><span class="text-white font-bold text-lg">Kotak #' + prize.id + '</span>' + realBadge + '</div><span class="text-5xl">' + prize.icon + '</span></div><h3 class="text-2xl font-bold text-white mb-2">' + prize.title + '</h3><p class="text-white/90 text-sm">' + prize.content + '</p></div>';
+                prizesHTML += '<div class="bg-gradient-to-br ' + prize.color + ' rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50"><div class="flex items-center justify-between mb-4"><div class="flex items-center">' + realBadge + '</div><span class="text-5xl">' + prize.icon + '</span></div><h3 class="text-2xl font-bold text-white mb-2">' + prize.title + '</h3><p class="text-white/90 text-sm">' + prize.content + '</p></div>';
             }
             
             prizesHTML += '</div><div class="flex gap-4 justify-center"><button onclick="closeAllPrizes()" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-lg">← Kembali</button></div></div>';
@@ -415,4 +442,3 @@
     </script>
 </body>
 </html>
-
