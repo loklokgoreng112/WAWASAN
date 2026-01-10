@@ -99,9 +99,16 @@
                 <button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">
                     🔄 Reset Semua Kotak
                 </button>
+                
+                <button id="showAllBtn" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 ml-4">
+                    🎁 Tampilkan Semua Hadiah
+                </button>
             </div>
 
             <div id="prizeView" class="hidden fade-in">
+            </div>
+            
+            <div id="allPrizesView" class="hidden">
             </div>
 
         </div>
@@ -281,8 +288,38 @@
             openedBoxes = [];
             closePrize();
         }
+        
+        function showAllPrizes() {
+            var mainView = document.getElementById('mainView');
+            var allPrizesView = document.getElementById('allPrizesView');
+            
+            mainView.classList.add('hidden');
+            allPrizesView.classList.remove('hidden');
+            
+            var prizesHTML = '<div class="fade-in"><h2 class="text-4xl md:text-5xl font-bold text-white mb-6 text-center">🎁 Semua Hadiah Yang Tersedia 🎁</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">';
+            
+            for (var i = 0; i < prizes.length; i++) {
+                var prize = prizes[i];
+                var realBadge = prize.isReal ? '<span class="ml-2 px-2 py-1 bg-green-500 text-white text-xs rounded-full">✓ Hadiah Asli</span>' : '<span class="ml-2 px-2 py-1 bg-gray-500/50 text-white text-xs rounded-full">Display Only</span>';
+                
+                prizesHTML += '<div class="bg-gradient-to-br ' + prize.color + ' rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50"><div class="flex items-center justify-between mb-4"><div class="flex items-center"><span class="text-white font-bold text-lg">Kotak #' + prize.id + '</span>' + realBadge + '</div><span class="text-5xl">' + prize.icon + '</span></div><h3 class="text-2xl font-bold text-white mb-2">' + prize.title + '</h3><p class="text-white/90 text-sm">' + prize.content + '</p></div>';
+            }
+            
+            prizesHTML += '</div><div class="flex gap-4 justify-center"><button onclick="closeAllPrizes()" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-lg">← Kembali</button></div></div>';
+            
+            allPrizesView.innerHTML = prizesHTML;
+        }
+        
+        function closeAllPrizes() {
+            var mainView = document.getElementById('mainView');
+            var allPrizesView = document.getElementById('allPrizesView');
+            
+            allPrizesView.classList.add('hidden');
+            mainView.classList.remove('hidden');
+        }
 
         document.getElementById('resetBtn').onclick = resetAll;
+        document.getElementById('showAllBtn').onclick = showAllPrizes;
         renderBoxes();
     </script>
 </body>
