@@ -116,7 +116,8 @@
                 category: "Uang Tunai",
                 icon: "💵",
                 color: "from-green-400 to-emerald-500",
-                boxColor: "from-green-400 to-green-600"
+                boxColor: "from-green-400 to-green-600",
+                isReal: true
             },
             {
                 id: 2,
@@ -125,7 +126,8 @@
                 category: "Uang Tunai",
                 icon: "💵",
                 color: "from-green-500 to-emerald-600",
-                boxColor: "from-emerald-400 to-emerald-600"
+                boxColor: "from-emerald-400 to-emerald-600",
+                isReal: true
             },
             {
                 id: 3,
@@ -134,7 +136,8 @@
                 category: "Uang Tunai",
                 icon: "💵",
                 color: "from-green-600 to-teal-600",
-                boxColor: "from-teal-400 to-teal-600"
+                boxColor: "from-teal-400 to-teal-600",
+                isReal: true
             },
             {
                 id: 4,
@@ -143,7 +146,8 @@
                 category: "Uang Tunai",
                 icon: "💸",
                 color: "from-blue-500 to-cyan-500",
-                boxColor: "from-blue-400 to-blue-600"
+                boxColor: "from-blue-400 to-blue-600",
+                isReal: true
             },
             {
                 id: 5,
@@ -152,7 +156,8 @@
                 category: "Uang Tunai",
                 icon: "💸",
                 color: "from-blue-600 to-cyan-600",
-                boxColor: "from-cyan-400 to-cyan-600"
+                boxColor: "from-cyan-400 to-cyan-600",
+                isReal: false
             },
             {
                 id: 6,
@@ -161,7 +166,8 @@
                 category: "Uang Tunai",
                 icon: "💰",
                 color: "from-purple-500 to-pink-500",
-                boxColor: "from-purple-400 to-purple-600"
+                boxColor: "from-purple-400 to-purple-600",
+                isReal: false
             },
             {
                 id: 7,
@@ -170,7 +176,8 @@
                 category: "Hadiah Spesial",
                 icon: "🥇",
                 color: "from-yellow-400 to-amber-500",
-                boxColor: "from-yellow-400 to-amber-500"
+                boxColor: "from-yellow-400 to-amber-500",
+                isReal: false
             },
             {
                 id: 8,
@@ -179,9 +186,12 @@
                 category: "Grand Prize",
                 icon: "📱",
                 color: "from-indigo-600 to-purple-700",
-                boxColor: "from-indigo-500 to-purple-700"
+                boxColor: "from-indigo-500 to-purple-700",
+                isReal: false
             }
         ];
+        
+        var realPrizes = [prizes[0], prizes[1], prizes[2], prizes[3]];
 
         var openedBoxes = [];
         var isAnimating = false;
@@ -235,7 +245,14 @@
             
             setTimeout(function() {
                 openedBoxes.push(prize.id);
-                showPrize(prize);
+                
+                var actualPrize = prize;
+                if (!prize.isReal) {
+                    var randomIndex = Math.floor(Math.random() * realPrizes.length);
+                    actualPrize = realPrizes[randomIndex];
+                }
+                
+                showPrize(actualPrize);
                 isAnimating = false;
             }, 800);
         }
