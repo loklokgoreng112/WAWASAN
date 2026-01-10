@@ -243,6 +243,21 @@
         var openedBoxes = [];
         var isAnimating = false;
         var currentUserId = '';
+        var usedUserIds = [];
+
+        function loadUsedUserIds() {
+            var stored = localStorage.getItem('usedUserIds');
+            if (stored) {
+                usedUserIds = JSON.parse(stored);
+            }
+        }
+
+        function saveUsedUserId(userId) {
+            if (usedUserIds.indexOf(userId) === -1) {
+                usedUserIds.push(userId);
+                localStorage.setItem('usedUserIds', JSON.stringify(usedUserIds));
+            }
+        }
 
         function startGame() {
             var userIdInput = document.getElementById('userIdInput');
@@ -253,7 +268,15 @@
                 return;
             }
             
+            if (usedUserIds.indexOf(userId) !== -1) {
+                alert('User ID "' + userId + '" sudah pernah digunakan! Silakan gunakan User ID yang berbeda.');
+                userIdInput.value = '';
+                userIdInput.focus();
+                return;
+            }
+            
             currentUserId = userId;
+            saveUsedUserId(userId);
             
             var loginView = document.getElementById('loginView');
             var mainView = document.getElementById('mainView');
@@ -387,6 +410,8 @@
                 startGame();
             }
         });
+        
+        loadUsedUserIds();
     </script>
 </body>
 </html>
