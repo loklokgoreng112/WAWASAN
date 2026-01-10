@@ -122,7 +122,7 @@
                     Pilih salah satu kotak dan menangkan hadiah menarik! ✨
                 </p>
                 <p class="text-yellow-300 mb-8 text-md font-semibold">
-                    Hadiah: SALDO GAME
+                    Hadiah: Uang Tunai • Saldo Digital • Rp 250.000!
                 </p>
 
                 <div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
@@ -151,8 +151,8 @@
             {
                 id: 1,
                 title: "Rp 25.000",
-                content: "Selamat! Anda mendapatkan saldo sebesar Rp 25.000! ",
-                category: "Saldo Game",
+                content: "Selamat! Anda mendapatkan uang tunai sebesar Rp 25.000! Lumayan untuk jajan atau bensin hari ini!",
+                category: "Uang Tunai",
                 icon: "💵",
                 color: "from-green-400 to-emerald-500",
                 boxColor: "from-green-400 to-green-600",
@@ -161,8 +161,8 @@
             {
                 id: 2,
                 title: "Rp 50.000",
-                content: "Wah, beruntung! Anda mendapatkan Saldo Rp 50.000! ",
-                category: "Saldo Game",
+                content: "Wah, beruntung! Anda mendapatkan uang tunai Rp 50.000! Bisa untuk makan enak atau nabung!",
+                category: "Uang Tunai",
                 icon: "💵",
                 color: "from-green-500 to-emerald-600",
                 boxColor: "from-emerald-400 to-emerald-600",
@@ -171,8 +171,8 @@
             {
                 id: 3,
                 title: "Rp 75.000",
-                content: "Keren! Rezeki Rp 75.000 datang! ",
-                category: "Saldo Game",
+                content: "Keren! Rezeki Rp 75.000 datang! Gunakan dengan bijak ya!",
+                category: "Uang Tunai",
                 icon: "💵",
                 color: "from-green-600 to-teal-600",
                 boxColor: "from-teal-400 to-teal-600",
@@ -181,8 +181,8 @@
             {
                 id: 4,
                 title: "Rp 100.000",
-                content: "Mantap! Anda berhasil mendapat Rp 100.000!",
-                category: "Saldo Game",
+                content: "Mantap! Anda berhasil mendapat Rp 100.000! Seperempat juta sudah di tangan!",
+                category: "Uang Tunai",
                 icon: "💸",
                 color: "from-blue-500 to-cyan-500",
                 boxColor: "from-blue-400 to-blue-600",
@@ -191,8 +191,8 @@
             {
                 id: 5,
                 title: "Rp 150.000",
-                content: "Luar biasa! Rejeki Rp 150.000 menghampiri Anda!",
-                category: "Saldo Game",
+                content: "Luar biasa! Rejeki Rp 150.000 menghampiri Anda! Hari yang beruntung!",
+                category: "Uang Tunai",
                 icon: "💸",
                 color: "from-blue-600 to-cyan-600",
                 boxColor: "from-cyan-400 to-cyan-600",
@@ -201,8 +201,8 @@
             {
                 id: 6,
                 title: "Rp 200.000",
-                content: "Wow! Jackpot Rp 200.000!",
-                category: "Saldo Game",
+                content: "Wow! Jackpot Rp 200.000! Ini rezeki yang sangat bagus!",
+                category: "Uang Tunai",
                 icon: "💰",
                 color: "from-purple-500 to-pink-500",
                 boxColor: "from-purple-400 to-purple-600",
@@ -210,20 +210,20 @@
             },
             {
                 id: 7,
-                title: "Emas 1 Gram",
-                content: "SELAMAT! Anda mendapatkan EMAS 1 GRAM! Investasi yang berharga untuk masa depan!",
+                title: "Saldo Rp 300.000",
+                content: "SELAMAT! Anda mendapatkan SALDO Rp 300.000! Bisa untuk belanja atau transfer kemana saja!",
                 category: "Hadiah Spesial",
-                icon: "🥇",
+                icon: "💳",
                 color: "from-yellow-400 to-amber-500",
                 boxColor: "from-yellow-400 to-amber-500",
                 isReal: false
             },
             {
                 id: 8,
-                title: "iPhone 17 Pro Max",
-                content: "GRAND PRIZE! 🎉 ANDA MENDAPATKAN iPHONE 17 PRO MAX 1 UNIT! Ini adalah hadiah terbesar! Selamat ya!",
+                title: "Rp 250.000",
+                content: "GRAND PRIZE! 🎉 ANDA MENDAPATKAN Rp 250.000! Ini adalah hadiah terbesar! Selamat ya!",
                 category: "Grand Prize",
-                icon: "📱",
+                icon: "💰",
                 color: "from-indigo-600 to-purple-700",
                 boxColor: "from-indigo-500 to-purple-700",
                 isReal: false
@@ -234,7 +234,7 @@
 
         function renderMainView() {
             var mainView = document.getElementById('mainView');
-            mainView.innerHTML = '<h1 class="text-4xl md:text-6xl font-bold text-white mb-2 animate-pulse">🎁 Kotak Hadiah Misteri 🎁</h1><p class="text-yellow-300 mb-3 text-lg font-semibold">Selamat datang, <span class="text-white">' + currentUserId + '</span>! 👋</p><p class="text-purple-200 mb-3 text-lg">Pilih salah satu kotak dan menangkan hadiah menarik! ✨</p><p class="text-yellow-300 mb-8 text-md font-semibold">Hadiah: Uang Tunai • Emas • iPhone 17 Pro Max!</p><div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6"></div><button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">🔄 Reset Semua Kotak</button><button id="showAllBtn" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 ml-4">🎁 Tampilkan Semua Hadiah</button>';
+            mainView.innerHTML = '<h1 class="text-4xl md:text-6xl font-bold text-white mb-2 animate-pulse">🎁 Kotak Hadiah Misteri 🎁</h1><p class="text-yellow-300 mb-3 text-lg font-semibold">Selamat datang, <span class="text-white">' + currentUserId + '</span>! 👋</p><p class="text-purple-200 mb-3 text-lg">Pilih salah satu kotak dan menangkan hadiah menarik! ✨</p><p class="text-yellow-300 mb-8 text-md font-semibold">Hadiah: Uang Tunai • Saldo Digital • Rp 250.000!</p><div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6"></div><button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">🔄 Reset Semua Kotak</button><button id="showAllBtn" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 ml-4">🎁 Tampilkan Semua Hadiah</button>';
             
             document.getElementById('resetBtn').onclick = resetAll;
             document.getElementById('showAllBtn').onclick = showAllPrizes;
@@ -364,14 +364,7 @@
             
             setTimeout(function() {
                 openedBoxes.push(prize.displayId);
-                
-                var actualPrize = prize;
-                if (!prize.isReal) {
-                    var randomIndex = Math.floor(Math.random() * realPrizes.length);
-                    actualPrize = realPrizes[randomIndex];
-                }
-                
-                showPrize(actualPrize);
+                showPrize(prize);
                 isAnimating = false;
             }, 800);
         }
@@ -408,13 +401,12 @@
             mainView.classList.add('hidden');
             allPrizesView.classList.remove('hidden');
             
-            var prizesHTML = '<div class="fade-in"><h2 class="text-4xl md:text-5xl font-bold text-white mb-6 text-center">🎁 Semua Hadiah Yang Tersedia 🎁</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">';
+            var prizesHTML = '<div class="fade-in"><h2 class="text-4xl md:text-5xl font-bold text-white mb-6 text-center">🎁 Semua Hadiah Yang Tersedia 🎁</h2><p class="text-yellow-300 text-center mb-6 text-lg">Setiap kotak berisi hadiah yang berbeda!</p><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">';
             
             for (var i = 0; i < prizes.length; i++) {
                 var prize = prizes[i];
-                var realBadge = prize.isReal ? '<span class="ml-2 px-2 py-1 bg-green-500 text-white text-xs rounded-full">✓ Hadiah Asli</span>' : '<span class="ml-2 px-2 py-1 bg-gray-500/50 text-white text-xs rounded-full">Display Only</span>';
                 
-                prizesHTML += '<div class="bg-gradient-to-br ' + prize.color + ' rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50"><div class="flex items-center justify-between mb-4"><div class="flex items-center">' + realBadge + '</div><span class="text-5xl">' + prize.icon + '</span></div><h3 class="text-2xl font-bold text-white mb-2">' + prize.title + '</h3><p class="text-white/90 text-sm">' + prize.content + '</p></div>';
+                prizesHTML += '<div class="bg-gradient-to-br ' + prize.color + ' rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50"><div class="flex items-center justify-between mb-4"><div class="flex items-center"><span class="px-3 py-1 bg-white/30 text-white text-xs font-bold rounded-full">Hadiah Asli ✓</span></div><span class="text-5xl">' + prize.icon + '</span></div><h3 class="text-2xl font-bold text-white mb-2">' + prize.title + '</h3><p class="text-white/90 text-sm">' + prize.content + '</p></div>';
             }
             
             prizesHTML += '</div><div class="flex gap-4 justify-center"><button onclick="closeAllPrizes()" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-lg">← Kembali</button></div></div>';
@@ -442,4 +434,3 @@
     </script>
 </body>
 </html>
-
