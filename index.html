@@ -118,11 +118,8 @@
                 <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-pulse">
                     🎁 Kotak Hadiah Misteri 🎁
                 </h1>
-                <p class="text-purple-200 mb-3 text-lg">
+                <p class="text-purple-200 mb-8 text-lg">
                     Pilih salah satu kotak dan menangkan hadiah menarik! ✨
-                </p>
-                <p class="text-yellow-300 mb-8 text-md font-semibold">
-                    Hadiah: Saldo Game!!
                 </p>
 
                 <div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
@@ -234,7 +231,7 @@
 
         function renderMainView() {
             var mainView = document.getElementById('mainView');
-            mainView.innerHTML = '<h1 class="text-4xl md:text-6xl font-bold text-white mb-2 animate-pulse">🎁 Kotak Hadiah Misteri 🎁</h1><p class="text-yellow-300 mb-3 text-lg font-semibold">Selamat datang, <span class="text-white">' + currentUserId + '</span>! 👋</p><p class="text-purple-200 mb-3 text-lg">Pilih salah satu kotak dan menangkan hadiah menarik! ✨</p><p class="text-yellow-300 mb-8 text-md font-semibold">Hadiah: Uang Tunai • Saldo game • Rp 250.000!</p><div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6"></div><button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">🔄 Reset Semua Kotak</button><button id="showAllBtn" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 ml-4">🎁 Tampilkan Semua Hadiah</button>';
+            mainView.innerHTML = '<h1 class="text-4xl md:text-6xl font-bold text-white mb-2 animate-pulse">🎁 Kotak Hadiah Misteri 🎁</h1><p class="text-yellow-300 mb-3 text-lg font-semibold">Selamat datang, <span class="text-white">' + currentUserId + '</span>! 👋</p><p class="text-purple-200 mb-8 text-lg">Pilih salah satu kotak dan menangkan hadiah menarik! ✨</p><div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6"></div><button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">🔄 Reset Semua Kotak</button><button id="showAllBtn" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 ml-4">🎁 Tampilkan Semua Hadiah</button>';
             
             document.getElementById('resetBtn').onclick = resetAll;
             document.getElementById('showAllBtn').onclick = showAllPrizes;
@@ -434,4 +431,3 @@
     </script>
 </body>
 </html>
-
