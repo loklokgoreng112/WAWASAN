@@ -1,433 +1,267 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotak Hadiah Misteri</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(-5px);
-            }
-            50% {
-                transform: translateY(5px);
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-        
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        
-        .animate-bounce {
-            animation: bounce 1s infinite;
-        }
-        
-        .animate-pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        .animate-spin {
-            animation: spin 3s linear infinite;
-        }
-        
-        .box-hover:hover {
-            transform: scale(1.05) translateY(-8px);
-        }
-        
-        .box-selected {
-            transform: scale(1.1) rotate(6deg);
-        }
-        
-        .box-opened {
-            opacity: 0.3;
-            transform: scale(0.9);
-            cursor: not-allowed;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
+import React, { useState } from 'react';
+import { Sparkles, Gift, RefreshCw, Star, Moon, Zap } from 'lucide-react';
+
+const MysteryBox = () => {
+  const [selectedBox, setSelectedBox] = useState(null);
+  const [revealedPrize, setRevealedPrize] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [openedBoxes, setOpenedBoxes] = useState([]);
+  const [userId, setUserId] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [shuffledPrizes, setShuffledPrizes] = useState([]);
+  const [showAllPrizes, setShowAllPrizes] = useState(false);
+
+  const prizes = [
+    { id: 1, title: "Rp 350.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💵", color: "from-green-400 to-emerald-500" },
+    { id: 2, title: "Rp 500.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💵", color: "from-green-500 to-emerald-600" },
+    { id: 3, title: "Rp 75.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💵", color: "from-green-600 to-teal-600" },
+    { id: 4, title: "Rp 100.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💸", color: "from-blue-500 to-cyan-500" },
+    { id: 5, title: "Rp 150.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💸", color: "from-blue-600 to-cyan-600" },
+    { id: 6, title: "Rp 200.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💰", color: "from-purple-500 to-pink-500" },
+    { id: 7, title: "Rp 300.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Hadiah Spesial", icon: "💰", color: "from-yellow-400 to-amber-500" },
+    { id: 8, title: "Rp 250.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Grand Prize", icon: "💰", color: "from-indigo-600 to-purple-700" }
+  ];
+
+  const shuffleArray = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
+  const handleLogin = () => {
+    const trimmedId = userId.trim();
+    if (!trimmedId) {
+      alert('Silakan masukkan User ID Anda!');
+      return;
+    }
+
+    const usedIds = JSON.parse(localStorage.getItem('usedUserIds') || '[]');
+    if (usedIds.includes(trimmedId)) {
+      alert(`User ID "${trimmedId}" sudah pernah digunakan! Silakan gunakan User ID yang berbeda.`);
+      setUserId('');
+      return;
+    }
+
+    usedIds.push(trimmedId);
+    localStorage.setItem('usedUserIds', JSON.stringify(usedIds));
     
-    <div class="absolute top-20 left-10 text-yellow-300 opacity-20 text-4xl animate-pulse">⭐</div>
-    <div class="absolute top-40 right-20 text-purple-300 opacity-20 text-5xl animate-pulse">🌙</div>
-    <div class="absolute bottom-20 left-1/4 text-pink-300 opacity-20 text-4xl animate-pulse">⚡</div>
-    <div class="absolute bottom-40 right-1/3 text-blue-300 opacity-20 text-4xl animate-pulse">✨</div>
+    setShuffledPrizes(shuffleArray(prizes));
+    setIsLoggedIn(true);
+  };
 
-    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
-        <div class="max-w-6xl w-full">
-            
-            <!-- Login View -->
-            <div id="loginView" class="text-center">
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-pulse">
-                    🎁 Kotak Hadiah Misteri 🎁
-                </h1>
-                <p class="text-purple-200 mb-8 text-lg">
-                    Masukkan User ID Anda untuk mulai bermain! ✨
-                </p>
-                
-                <div class="max-w-md mx-auto bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border-2 border-white/20">
-                    <label class="block text-white text-lg font-semibold mb-4 text-left">
-                        User ID:
-                    </label>
-                    <input 
-                        type="text" 
-                        id="userIdInput" 
-                        placeholder="Masukkan User ID Anda" 
-                        class="w-full px-6 py-4 rounded-full text-center text-lg font-semibold bg-white text-purple-700 placeholder-purple-300 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-all"
-                        maxlength="50"
-                    />
-                    <button 
-                        id="startBtn" 
-                        class="w-full mt-6 inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 text-lg"
-                    >
-                        🎮 Mulai Bermain
-                    </button>
-                    <p class="text-white/60 text-sm mt-4">
-                        * User ID akan digunakan untuk identifikasi hadiah Anda
-                    </p>
-                </div>
-            </div>
-            
-            <div id="mainView" class="hidden text-center">
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-pulse">
-                    🎁 Kotak Hadiah Misteri 🎁
-                </h1>
-                <p class="text-purple-200 mb-8 text-lg">
-                    Pilih salah satu kotak dan menangkan hadiah menarik! ✨
-                </p>
+  const handleBoxClick = (prize) => {
+    if (isAnimating || openedBoxes.includes(prize.id)) return;
+    
+    setIsAnimating(true);
+    setSelectedBox(prize.id);
+    
+    setTimeout(() => {
+      setRevealedPrize(prize);
+      setOpenedBoxes([...openedBoxes, prize.id]);
+      setIsAnimating(false);
+    }, 800);
+  };
 
-                <div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
-                </div>
+  const handleReset = () => {
+    setOpenedBoxes([]);
+    setRevealedPrize(null);
+    setSelectedBox(null);
+  };
 
-                <button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">
-                    🔄 Reset Semua Kotak
-                </button>
-                
-                <button id="showAllBtn" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 ml-4">
-                    🎁 Tampilkan Semua Hadiah
-                </button>
-            </div>
+  const handleClose = () => {
+    setRevealedPrize(null);
+    setSelectedBox(null);
+  };
 
-            <div id="prizeView" class="hidden fade-in">
-            </div>
-            
-            <div id="allPrizesView" class="hidden">
-            </div>
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4 relative">
+        <Star className="absolute top-20 left-10 text-yellow-300 opacity-20" size={40} />
+        <Moon className="absolute top-40 right-20 text-purple-300 opacity-20" size={50} />
+        <Zap className="absolute bottom-20 left-1/4 text-pink-300 opacity-20" size={35} />
+        <Sparkles className="absolute bottom-40 right-1/3 text-blue-300 opacity-20" size={45} />
 
+        <div className="max-w-6xl w-full text-center relative z-10">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">🎁 Kotak Hadiah Misteri 🎁</h1>
+          <p className="text-purple-200 mb-8 text-lg">Masukkan User ID Anda untuk mulai bermain! ✨</p>
+          
+          <div className="max-w-md mx-auto bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border-2 border-white/20">
+            <label className="block text-white text-lg font-semibold mb-4 text-left">User ID:</label>
+            <input 
+              type="text" 
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+              placeholder="Masukkan User ID Anda" 
+              className="w-full px-6 py-4 rounded-full text-center text-lg font-semibold bg-white text-purple-700 placeholder-purple-300 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-all"
+              maxLength={50}
+            />
+            <button 
+              onClick={handleLogin}
+              className="w-full mt-6 inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 text-lg"
+            >
+              🎮 Mulai Bermain
+            </button>
+            <p className="text-white/60 text-sm mt-4">* User ID akan digunakan untuk identifikasi hadiah Anda</p>
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  if (showAllPrizes) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4">
+        <div className="max-w-6xl w-full">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-center">🎁 Semua Hadiah Yang Tersedia 🎁</h2>
+          <p className="text-yellow-300 text-center mb-6 text-lg">Setiap kotak berisi hadiah yang berbeda!</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {prizes.map((prize) => (
+              <div key={prize.id} className={`bg-gradient-to-br ${prize.color} rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50`}>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 bg-white/30 text-white text-xs font-bold rounded-full">Hadiah Asli ✓</span>
+                  <span className="text-5xl">{prize.icon}</span>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">{prize.title}</h3>
+                <p className="text-white/90 text-sm font-semibold">SCREENSHOT & KIRIM BUKTI KE LIVECHAT</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center">
+            <button 
+              onClick={() => setShowAllPrizes(false)}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-lg"
+            >
+              ← Kembali
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (revealedPrize) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4">
+        <div className="max-w-2xl w-full">
+          <div className={`bg-gradient-to-br ${revealedPrize.color} rounded-3xl p-8 md:p-12 shadow-2xl border-4 border-yellow-300 relative`}>
+            <div className="absolute top-0 left-1/4 text-yellow-300 text-4xl">🎉</div>
+            <div className="absolute top-0 right-1/4 text-yellow-300 text-4xl">🎊</div>
+            <div className="absolute bottom-1/4 left-1/3 text-white text-3xl">⭐</div>
+            <div className="absolute top-1/2 right-1/4 text-white text-3xl">✨</div>
+
+            <div className="mb-4 text-white/80 font-semibold">User ID: {userId}</div>
+            <div className="flex items-center justify-between mb-6 relative z-10">
+              <span className="px-4 py-2 bg-white/30 rounded-full text-white text-sm font-bold backdrop-blur-sm border-2 border-white/50 shadow-lg">
+                {revealedPrize.category}
+              </span>
+              <span className="text-6xl md:text-7xl drop-shadow-lg">{revealedPrize.icon}</span>
+            </div>
+
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 drop-shadow-lg text-center relative z-10">
+              {revealedPrize.title}
+            </h2>
+
+            <div className="bg-white/20 rounded-2xl p-6 mb-8 backdrop-blur-sm border-2 border-white/30 shadow-xl relative z-10">
+              <p className="text-white text-lg md:text-xl leading-relaxed font-semibold text-center">
+                {revealedPrize.content}
+              </p>
+            </div>
+
+            <div className="flex gap-4 justify-center relative z-10 flex-wrap">
+              <a 
+                href="https://wawasankini.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-8 md:px-10 py-4 md:py-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black rounded-full hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-2xl hover:scale-110 text-lg md:text-xl"
+              >
+                🎁 Claim Hadiah Sekarang!
+              </a>
+            </div>
+            <p className="text-white/80 text-sm mt-6 text-center relative z-10">* Klik tombol di atas untuk mengklaim hadiah Anda</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4 relative">
+      <Star className="absolute top-20 left-10 text-yellow-300 opacity-20" size={40} />
+      <Moon className="absolute top-40 right-20 text-purple-300 opacity-20" size={50} />
+      <Zap className="absolute bottom-20 left-1/4 text-pink-300 opacity-20" size={35} />
+      <Sparkles className="absolute bottom-40 right-1/3 text-blue-300 opacity-20" size={45} />
+
+      <div className="max-w-6xl w-full relative z-10">
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-2">🎁 Kotak Hadiah Misteri 🎁</h1>
+          <p className="text-yellow-300 mb-3 text-lg font-semibold">Selamat datang, <span className="text-white">{userId}</span>! 👋</p>
+          <p className="text-purple-200 mb-8 text-lg">Pilih salah satu kotak dan menangkan hadiah menarik! ✨</p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
+            {shuffledPrizes.map((prize) => {
+              const isOpened = openedBoxes.includes(prize.id);
+              const isSelected = selectedBox === prize.id && isAnimating;
+              
+              return (
+                <div
+                  key={prize.id}
+                  onClick={() => handleBoxClick(prize)}
+                  className={`relative transition-all duration-500 ${
+                    isOpened ? 'opacity-30 scale-90' : 'cursor-pointer hover:scale-105 hover:-translate-y-2'
+                  } ${isSelected ? 'scale-110 rotate-6' : ''}`}
+                >
+                  <div className="aspect-square bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden border-4 border-yellow-300">
+                    {isOpened ? (
+                      <div className="relative text-center">
+                        <div className="text-5xl md:text-6xl mb-2">{prize.icon}</div>
+                        <div className="text-white font-bold text-xs md:text-sm px-2">{prize.title}</div>
+                      </div>
+                    ) : (
+                      <div className="relative text-center">
+                        <Gift size={50} className="text-white mb-2 mx-auto" />
+                        <div className="text-white font-bold text-2xl">?</div>
+                      </div>
+                    )}
+
+                    {!isOpened && (
+                      <>
+                        <Sparkles className="absolute top-2 right-2 text-yellow-200" size={20} />
+                        <Sparkles className="absolute bottom-2 left-2 text-yellow-200" size={20} />
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-4 justify-center flex-wrap">
+            {openedBoxes.length > 0 && (
+              <button
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105"
+              >
+                <RefreshCw size={24} />
+                Reset Semua Kotak
+              </button>
+            )}
+            
+            <button
+              onClick={() => setShowAllPrizes(true)}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105"
+            >
+              <Gift size={24} />
+              Tampilkan Semua Hadiah
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+  );
+};
 
-    <script>
-        var prizes = [
-            {
-                id: 1,
-                title: "Rp 25.000",
-                content: "Selamat! Anda mendapatkan uang tunai sebesar Rp 25.000! Lumayan untuk jajan atau bensin hari ini!",
-                category: "Uang Tunai",
-                icon: "💵",
-                color: "from-green-400 to-emerald-500",
-                boxColor: "from-green-400 to-green-600",
-                isReal: true
-            },
-            {
-                id: 2,
-                title: "Rp 50.000",
-                content: "Wah, beruntung! Anda mendapatkan uang tunai Rp 50.000! Bisa untuk makan enak atau nabung!",
-                category: "Uang Tunai",
-                icon: "💵",
-                color: "from-green-500 to-emerald-600",
-                boxColor: "from-emerald-400 to-emerald-600",
-                isReal: true
-            },
-            {
-                id: 3,
-                title: "Rp 75.000",
-                content: "Keren! Rezeki Rp 75.000 datang! Gunakan dengan bijak ya!",
-                category: "Uang Tunai",
-                icon: "💵",
-                color: "from-green-600 to-teal-600",
-                boxColor: "from-teal-400 to-teal-600",
-                isReal: true
-            },
-            {
-                id: 4,
-                title: "Rp 100.000",
-                content: "Mantap! Anda berhasil mendapat Rp 100.000! Seperempat juta sudah di tangan!",
-                category: "Uang Tunai",
-                icon: "💸",
-                color: "from-blue-500 to-cyan-500",
-                boxColor: "from-blue-400 to-blue-600",
-                isReal: true
-            },
-            {
-                id: 5,
-                title: "Rp 150.000",
-                content: "Luar biasa! Rejeki Rp 150.000 menghampiri Anda! Hari yang beruntung!",
-                category: "Uang Tunai",
-                icon: "💸",
-                color: "from-blue-600 to-cyan-600",
-                boxColor: "from-cyan-400 to-cyan-600",
-                isReal: false
-            },
-            {
-                id: 6,
-                title: "Rp 200.000",
-                content: "Wow! Jackpot Rp 200.000! Ini rezeki yang sangat bagus!",
-                category: "Uang Tunai",
-                icon: "💰",
-                color: "from-purple-500 to-pink-500",
-                boxColor: "from-purple-400 to-purple-600",
-                isReal: false
-            },
-            {
-                id: 7,
-                title: "Saldo Rp 300.000",
-                content: "SELAMAT! Anda mendapatkan SALDO Rp 300.000! Bisa untuk belanja atau transfer kemana saja!",
-                category: "Hadiah Spesial",
-                icon: "💳",
-                color: "from-yellow-400 to-amber-500",
-                boxColor: "from-yellow-400 to-amber-500",
-                isReal: false
-            },
-            {
-                id: 8,
-                title: "Rp 250.000",
-                content: "GRAND PRIZE! 🎉 ANDA MENDAPATKAN Rp 250.000! Ini adalah hadiah terbesar! Selamat ya!",
-                category: "Grand Prize",
-                icon: "💰",
-                color: "from-indigo-600 to-purple-700",
-                boxColor: "from-indigo-500 to-purple-700",
-                isReal: false
-            }
-        ];
-        
-        var realPrizes = [prizes[0], prizes[1], prizes[2], prizes[3]];
-
-        function renderMainView() {
-            var mainView = document.getElementById('mainView');
-            mainView.innerHTML = '<h1 class="text-4xl md:text-6xl font-bold text-white mb-2 animate-pulse">🎁 Kotak Hadiah Misteri 🎁</h1><p class="text-yellow-300 mb-3 text-lg font-semibold">Selamat datang, <span class="text-white">' + currentUserId + '</span>! 👋</p><p class="text-purple-200 mb-8 text-lg">Pilih salah satu kotak dan menangkan hadiah menarik! ✨</p><div id="boxesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6"></div><button id="resetBtn" class="hidden inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105">🔄 Reset Semua Kotak</button><button id="showAllBtn" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 ml-4">🎁 Tampilkan Semua Hadiah</button>';
-            
-            document.getElementById('resetBtn').onclick = resetAll;
-            document.getElementById('showAllBtn').onclick = showAllPrizes;
-        }
-
-        var openedBoxes = [];
-        var isAnimating = false;
-        var currentUserId = '';
-        var usedUserIds = [];
-        var shuffledPrizes = [];
-
-        function shuffleArray(array) {
-            var newArray = array.slice();
-            for (var i = newArray.length - 1; i > 0; i--) {
-                var j = Math.floor(Math.random() * (i + 1));
-                var temp = newArray[i];
-                newArray[i] = newArray[j];
-                newArray[j] = temp;
-            }
-            return newArray;
-        }
-
-        function loadUsedUserIds() {
-            var stored = localStorage.getItem('usedUserIds');
-            if (stored) {
-                usedUserIds = JSON.parse(stored);
-            }
-        }
-
-        function saveUsedUserId(userId) {
-            if (usedUserIds.indexOf(userId) === -1) {
-                usedUserIds.push(userId);
-                localStorage.setItem('usedUserIds', JSON.stringify(usedUserIds));
-            }
-        }
-
-        function startGame() {
-            var userIdInput = document.getElementById('userIdInput');
-            var userId = userIdInput.value.trim();
-            
-            if (userId === '') {
-                alert('Silakan masukkan User ID Anda!');
-                return;
-            }
-            
-            if (usedUserIds.indexOf(userId) !== -1) {
-                alert('User ID "' + userId + '" sudah pernah digunakan! Silakan gunakan User ID yang berbeda.');
-                userIdInput.value = '';
-                userIdInput.focus();
-                return;
-            }
-            
-            currentUserId = userId;
-            saveUsedUserId(userId);
-            
-            shuffledPrizes = shuffleArray(prizes);
-            for (var i = 0; i < shuffledPrizes.length; i++) {
-                shuffledPrizes[i].displayId = i + 1;
-            }
-            
-            var loginView = document.getElementById('loginView');
-            var mainView = document.getElementById('mainView');
-            
-            loginView.classList.add('hidden');
-            mainView.classList.remove('hidden');
-            
-            renderMainView();
-            renderBoxes();
-        }
-
-        function renderBoxes() {
-            var grid = document.getElementById('boxesGrid');
-            grid.innerHTML = '';
-
-            for (var i = 0; i < shuffledPrizes.length; i++) {
-                var prize = shuffledPrizes[i];
-                var isOpened = openedBoxes.indexOf(prize.displayId) !== -1;
-                
-                var boxDiv = document.createElement('div');
-                boxDiv.className = 'relative transition-all duration-500 ' + (isOpened ? 'box-opened' : 'box-hover cursor-pointer');
-                
-                var innerContent = '';
-                if (isOpened) {
-                    innerContent = '<div class="relative text-center"><div class="text-5xl md:text-6xl mb-2">' + prize.icon + '</div><div class="text-white font-bold text-xs md:text-sm px-2">' + prize.title + '</div></div>';
-                } else {
-                    innerContent = '<div class="relative text-center"><div class="text-5xl md:text-6xl text-white mb-2">🎁</div><div class="text-white font-bold text-2xl">?</div></div><div class="absolute top-2 right-2 text-yellow-200 text-xl animate-spin">✨</div><div class="absolute bottom-2 left-2 text-yellow-200 text-xl animate-spin">✨</div>';
-                }
-                
-                boxDiv.innerHTML = '<div class="aspect-square bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden border-4 border-yellow-300">' + innerContent + '</div>';
-
-                if (!isOpened) {
-                    (function(currentPrize) {
-                        boxDiv.onclick = function() {
-                            handleBoxClick(currentPrize);
-                        };
-                    })(prize);
-                }
-
-                grid.appendChild(boxDiv);
-            }
-
-            var resetBtn = document.getElementById('resetBtn');
-            if (openedBoxes.length > 0) {
-                resetBtn.classList.remove('hidden');
-            } else {
-                resetBtn.classList.add('hidden');
-            }
-        }
-
-        function handleBoxClick(prize) {
-            if (isAnimating) return;
-            
-            isAnimating = true;
-            
-            var boxes = document.querySelectorAll('#boxesGrid > div');
-            var boxIndex = -1;
-            for (var i = 0; i < shuffledPrizes.length; i++) {
-                if (shuffledPrizes[i].displayId === prize.displayId) {
-                    boxIndex = i;
-                    break;
-                }
-            }
-            
-            if (boxIndex !== -1) {
-                boxes[boxIndex].classList.add('box-selected');
-            }
-            
-            setTimeout(function() {
-                openedBoxes.push(prize.displayId);
-                showPrize(prize);
-                isAnimating = false;
-            }, 800);
-        }
-
-        function showPrize(prize) {
-            var mainView = document.getElementById('mainView');
-            var prizeView = document.getElementById('prizeView');
-            
-            mainView.classList.add('hidden');
-            prizeView.classList.remove('hidden');
-            
-            prizeView.innerHTML = '<div class="bg-gradient-to-br ' + prize.color + ' rounded-3xl p-8 md:p-12 shadow-2xl border-4 border-yellow-300 relative fade-in"><div class="absolute top-0 left-1/4 text-yellow-300 text-4xl animate-bounce">🎉</div><div class="absolute top-0 right-1/4 text-yellow-300 text-4xl animate-bounce">🎊</div><div class="absolute bottom-1/4 left-1/3 text-white text-3xl animate-bounce">⭐</div><div class="absolute top-1/2 right-1/4 text-white text-3xl animate-bounce">✨</div><div class="mb-4 text-white/80 font-semibold">User ID: ' + currentUserId + '</div><div class="flex items-center justify-between mb-6 relative z-10"><span class="px-4 py-2 bg-white/30 rounded-full text-white text-sm font-bold backdrop-blur-sm border-2 border-white/50 shadow-lg">' + prize.category + '</span><span class="text-6xl md:text-7xl drop-shadow-lg animate-bounce">' + prize.icon + '</span></div><h2 class="text-3xl md:text-5xl font-black text-white mb-6 drop-shadow-lg text-center relative z-10">' + prize.title + '</h2><div class="bg-white/20 rounded-2xl p-6 mb-8 backdrop-blur-sm border-2 border-white/30 shadow-xl relative z-10"><p class="text-white text-lg md:text-xl leading-relaxed font-semibold text-center">' + prize.content + '</p></div><div class="flex gap-4 justify-center relative z-10 flex-wrap"><a href="https://wawasankini.com/" target="_blank" class="flex items-center gap-2 px-8 md:px-10 py-4 md:py-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black rounded-full hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-2xl hover:scale-110 text-lg md:text-xl animate-pulse">🎁 Claim Hadiah Sekarang!</a></div><p class="text-white/80 text-sm mt-6 text-center">* Klik tombol di atas untuk mengklaim hadiah Anda</p></div>';
-        }
-
-        function closePrize() {
-            var mainView = document.getElementById('mainView');
-            var prizeView = document.getElementById('prizeView');
-            
-            prizeView.classList.add('hidden');
-            mainView.classList.remove('hidden');
-            
-            renderBoxes();
-        }
-
-        function resetAll() {
-            openedBoxes = [];
-            closePrize();
-        }
-        
-        function showAllPrizes() {
-            var mainView = document.getElementById('mainView');
-            var allPrizesView = document.getElementById('allPrizesView');
-            
-            mainView.classList.add('hidden');
-            allPrizesView.classList.remove('hidden');
-            
-            var prizesHTML = '<div class="fade-in"><h2 class="text-4xl md:text-5xl font-bold text-white mb-6 text-center">🎁 Semua Hadiah Yang Tersedia 🎁</h2><p class="text-yellow-300 text-center mb-6 text-lg">Setiap kotak berisi hadiah yang berbeda!</p><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">';
-            
-            for (var i = 0; i < prizes.length; i++) {
-                var prize = prizes[i];
-                
-                prizesHTML += '<div class="bg-gradient-to-br ' + prize.color + ' rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50"><div class="flex items-center justify-between mb-4"><div class="flex items-center"><span class="px-3 py-1 bg-white/30 text-white text-xs font-bold rounded-full">Hadiah Asli ✓</span></div><span class="text-5xl">' + prize.icon + '</span></div><h3 class="text-2xl font-bold text-white mb-2">' + prize.title + '</h3><p class="text-white/90 text-sm font-semibold">SCREENSHOT & KIRIM BUKTI KE LIVECHAT</p></div>';
-            }
-            
-            prizesHTML += '</div><div class="flex gap-4 justify-center"><button onclick="closeAllPrizes()" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-lg">← Kembali</button></div></div>';
-            
-            allPrizesView.innerHTML = prizesHTML;
-        }
-        
-        function closeAllPrizes() {
-            var mainView = document.getElementById('mainView');
-            var allPrizesView = document.getElementById('allPrizesView');
-            
-            allPrizesView.classList.add('hidden');
-            mainView.classList.remove('hidden');
-        }
-
-        document.getElementById('startBtn').onclick = startGame;
-        
-        document.getElementById('userIdInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                startGame();
-            }
-        });
-        
-        loadUsedUserIds();
-    </script>
-</body>
-</html>
+export default MysteryBox;
