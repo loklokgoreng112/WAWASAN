@@ -1,267 +1,256 @@
 import React, { useState } from 'react';
-import { Sparkles, Gift, RefreshCw, Star, Moon, Zap } from 'lucide-react';
+import { Gift, Sparkles, Trophy, User, LogIn } from 'lucide-react';
 
-const MysteryBox = () => {
-  const [selectedBox, setSelectedBox] = useState(null);
-  const [revealedPrize, setRevealedPrize] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [openedBoxes, setOpenedBoxes] = useState([]);
+export default function MysteryBoxGame() {
   const [userId, setUserId] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [shuffledPrizes, setShuffledPrizes] = useState([]);
-  const [showAllPrizes, setShowAllPrizes] = useState(false);
+  const [boxes, setBoxes] = useState([]);
+  const [openedBoxes, setOpenedBoxes] = useState([]);
+  const [currentReward, setCurrentReward] = useState(null);
+  const [isOpening, setIsOpening] = useState(false);
+  const [totalWinnings, setTotalWinnings] = useState(0);
+  const [claimedUsers, setClaimedUsers] = useState([]);
+  const [alreadyClaimed, setAlreadyClaimed] = useState(false);
 
-  const prizes = [
-    { id: 1, title: "Rp 350.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💵", color: "from-green-400 to-emerald-500" },
-    { id: 2, title: "Rp 500.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💵", color: "from-green-500 to-emerald-600" },
-    { id: 3, title: "Rp 75.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💵", color: "from-green-600 to-teal-600" },
-    { id: 4, title: "Rp 100.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💸", color: "from-blue-500 to-cyan-500" },
-    { id: 5, title: "Rp 150.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💸", color: "from-blue-600 to-cyan-600" },
-    { id: 6, title: "Rp 200.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Uang Tunai", icon: "💰", color: "from-purple-500 to-pink-500" },
-    { id: 7, title: "Rp 300.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Hadiah Spesial", icon: "💰", color: "from-yellow-400 to-amber-500" },
-    { id: 8, title: "Rp 250.000", content: "SCREENSHOT & KIRIM BUKTI KE LIVECHAT", category: "Grand Prize", icon: "💰", color: "from-indigo-600 to-purple-700" }
-  ];
-
-  const shuffleArray = (array) => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  const generateBoxes = () => {
+    const prizes = [];
+    for (let i = 50000; i <= 500000; i += 50000) {
+      prizes.push(i);
     }
-    return newArray;
+    
+    const shuffled = prizes.sort(() => Math.random() - 0.5);
+    
+    return shuffled.map((prize, index) => ({
+      id: index + 1,
+      prize: prize,
+      isOpened: false
+    }));
   };
 
-  const handleLogin = () => {
-    const trimmedId = userId.trim();
-    if (!trimmedId) {
-      alert('Silakan masukkan User ID Anda!');
-      return;
+  const handleLogin = async () => {
+    if (userId.trim()) {
+      // Cek apakah user sudah pernah claim
+      try {
+        const result = await window.storage.get(`claimed_${userId}`, true);
+        if (result && result.value === 'true') {
+          setAlreadyClaimed(true);
+          return;
+        }
+      } catch (error) {
+        // User belum pernah claim
+      }
+      
+      setIsLoggedIn(true);
+      setBoxes(generateBoxes());
     }
-
-    const usedIds = JSON.parse(localStorage.getItem('usedUserIds') || '[]');
-    if (usedIds.includes(trimmedId)) {
-      alert(`User ID "${trimmedId}" sudah pernah digunakan! Silakan gunakan User ID yang berbeda.`);
-      setUserId('');
-      return;
-    }
-
-    usedIds.push(trimmedId);
-    localStorage.setItem('usedUserIds', JSON.stringify(usedIds));
-    
-    setShuffledPrizes(shuffleArray(prizes));
-    setIsLoggedIn(true);
   };
 
-  const handleBoxClick = (prize) => {
-    if (isAnimating || openedBoxes.includes(prize.id)) return;
+  const openBox = (boxId) => {
+    if (isOpening || openedBoxes.includes(boxId)) return;
+
+    setIsOpening(true);
     
-    setIsAnimating(true);
-    setSelectedBox(prize.id);
-    
-    setTimeout(() => {
-      setRevealedPrize(prize);
-      setOpenedBoxes([...openedBoxes, prize.id]);
-      setIsAnimating(false);
-    }, 800);
+    setTimeout(async () => {
+      const box = boxes.find(b => b.id === boxId);
+      setCurrentReward(box.prize);
+      setOpenedBoxes([...openedBoxes, boxId]);
+      setTotalWinnings(totalWinnings + box.prize);
+      
+      // Tandai user sudah claim saat membuka kotak pertama
+      if (openedBoxes.length === 0) {
+        try {
+          await window.storage.set(`claimed_${userId}`, 'true', true);
+        } catch (error) {
+          console.error('Error saving claim status:', error);
+        }
+      }
+      
+      setTimeout(() => {
+        setIsOpening(false);
+        setCurrentReward(null);
+      }, 3000);
+    }, 1000);
   };
 
-  const handleReset = () => {
+  const resetGame = () => {
     setOpenedBoxes([]);
-    setRevealedPrize(null);
-    setSelectedBox(null);
+    setTotalWinnings(0);
+    setBoxes(generateBoxes());
+    setCurrentReward(null);
   };
 
-  const handleClose = () => {
-    setRevealedPrize(null);
-    setSelectedBox(null);
+  const formatRupiah = (amount) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(amount);
   };
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4 relative">
-        <Star className="absolute top-20 left-10 text-yellow-300 opacity-20" size={40} />
-        <Moon className="absolute top-40 right-20 text-purple-300 opacity-20" size={50} />
-        <Zap className="absolute bottom-20 left-1/4 text-pink-300 opacity-20" size={35} />
-        <Sparkles className="absolute bottom-40 right-1/3 text-blue-300 opacity-20" size={45} />
-
-        <div className="max-w-6xl w-full text-center relative z-10">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">🎁 Kotak Hadiah Misteri 🎁</h1>
-          <p className="text-purple-200 mb-8 text-lg">Masukkan User ID Anda untuk mulai bermain! ✨</p>
-          
-          <div className="max-w-md mx-auto bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border-2 border-white/20">
-            <label className="block text-white text-lg font-semibold mb-4 text-left">User ID:</label>
-            <input 
-              type="text" 
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-              placeholder="Masukkan User ID Anda" 
-              className="w-full px-6 py-4 rounded-full text-center text-lg font-semibold bg-white text-purple-700 placeholder-purple-300 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-all"
-              maxLength={50}
-            />
-            <button 
-              onClick={handleLogin}
-              className="w-full mt-6 inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105 text-lg"
-            >
-              🎮 Mulai Bermain
-            </button>
-            <p className="text-white/60 text-sm mt-4">* User ID akan digunakan untuk identifikasi hadiah Anda</p>
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+        <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 w-full max-w-md shadow-2xl">
+          <div className="text-center mb-8">
+            <div className="inline-block p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4">
+              <Gift className="w-16 h-16 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-2">Kotak Mystery</h1>
+            <p className="text-purple-200">Masukkan User ID untuk bermain</p>
           </div>
-        </div>
-      </div>
-    );
-  }
 
-  if (showAllPrizes) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4">
-        <div className="max-w-6xl w-full">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-center">🎁 Semua Hadiah Yang Tersedia 🎁</h2>
-          <p className="text-yellow-300 text-center mb-6 text-lg">Setiap kotak berisi hadiah yang berbeda!</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {prizes.map((prize) => (
-              <div key={prize.id} className={`bg-gradient-to-br ${prize.color} rounded-2xl p-6 shadow-xl border-4 border-yellow-300/50`}>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 bg-white/30 text-white text-xs font-bold rounded-full">Hadiah Asli ✓</span>
-                  <span className="text-5xl">{prize.icon}</span>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">{prize.title}</h3>
-                <p className="text-white/90 text-sm font-semibold">SCREENSHOT & KIRIM BUKTI KE LIVECHAT</p>
+          {alreadyClaimed ? (
+            <div className="space-y-6">
+              <div className="bg-red-500/20 border-2 border-red-500 rounded-xl p-6 text-center">
+                <p className="text-red-200 font-bold text-lg mb-2">⚠️ User Sudah Pernah Claim!</p>
+                <p className="text-red-300 text-sm">User ID <span className="font-bold">{userId}</span> sudah pernah mengklaim hadiah sebelumnya.</p>
+                <p className="text-red-300 text-sm mt-2">Setiap user hanya dapat claim 1 kali.</p>
               </div>
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <button 
-              onClick={() => setShowAllPrizes(false)}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-lg"
-            >
-              ← Kembali
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (revealedPrize) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full">
-          <div className={`bg-gradient-to-br ${revealedPrize.color} rounded-3xl p-8 md:p-12 shadow-2xl border-4 border-yellow-300 relative`}>
-            <div className="absolute top-0 left-1/4 text-yellow-300 text-4xl">🎉</div>
-            <div className="absolute top-0 right-1/4 text-yellow-300 text-4xl">🎊</div>
-            <div className="absolute bottom-1/4 left-1/3 text-white text-3xl">⭐</div>
-            <div className="absolute top-1/2 right-1/4 text-white text-3xl">✨</div>
-
-            <div className="mb-4 text-white/80 font-semibold">User ID: {userId}</div>
-            <div className="flex items-center justify-between mb-6 relative z-10">
-              <span className="px-4 py-2 bg-white/30 rounded-full text-white text-sm font-bold backdrop-blur-sm border-2 border-white/50 shadow-lg">
-                {revealedPrize.category}
-              </span>
-              <span className="text-6xl md:text-7xl drop-shadow-lg">{revealedPrize.icon}</span>
-            </div>
-
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 drop-shadow-lg text-center relative z-10">
-              {revealedPrize.title}
-            </h2>
-
-            <div className="bg-white/20 rounded-2xl p-6 mb-8 backdrop-blur-sm border-2 border-white/30 shadow-xl relative z-10">
-              <p className="text-white text-lg md:text-xl leading-relaxed font-semibold text-center">
-                {revealedPrize.content}
-              </p>
-            </div>
-
-            <div className="flex gap-4 justify-center relative z-10 flex-wrap">
-              <a 
-                href="https://wawasankini.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-8 md:px-10 py-4 md:py-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black rounded-full hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-2xl hover:scale-110 text-lg md:text-xl"
+              <button
+                onClick={() => {
+                  setUserId('');
+                  setAlreadyClaimed(false);
+                }}
+                className="w-full bg-white/20 backdrop-blur-sm text-white font-bold py-4 rounded-xl hover:scale-105 transition-all duration-300"
               >
-                🎁 Claim Hadiah Sekarang!
-              </a>
+                ← Kembali
+              </button>
             </div>
-            <p className="text-white/80 text-sm mt-6 text-center relative z-10">* Klik tombol di atas untuk mengklaim hadiah Anda</p>
-          </div>
+          ) : (
+            <div className="space-y-6">
+              <div>
+                <label className="block text-white font-semibold mb-2 flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  User ID
+                </label>
+                <input
+                  type="text"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                  placeholder="Masukkan User ID Anda"
+                  className="w-full px-4 py-3 rounded-xl bg-white/20 border-2 border-white/30 text-white placeholder-white/50 focus:outline-none focus:border-yellow-400 transition-all"
+                />
+              </div>
+
+              <button
+                onClick={handleLogin}
+                className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
+              >
+                <LogIn className="w-5 h-5" />
+                Masuk & Mulai Bermain
+              </button>
+              
+              <div className="bg-blue-500/20 border-2 border-blue-500 rounded-xl p-4">
+                <p className="text-blue-200 text-sm text-center">
+                  ℹ️ Setiap User ID hanya dapat claim hadiah <span className="font-bold">1 kali</span>
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4 relative">
-      <Star className="absolute top-20 left-10 text-yellow-300 opacity-20" size={40} />
-      <Moon className="absolute top-40 right-20 text-purple-300 opacity-20" size={50} />
-      <Zap className="absolute bottom-20 left-1/4 text-pink-300 opacity-20" size={35} />
-      <Sparkles className="absolute bottom-40 right-1/3 text-blue-300 opacity-20" size={45} />
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8 pt-8">
+          <h1 className="text-5xl font-bold text-white mb-2 flex items-center justify-center gap-3">
+            <Sparkles className="w-12 h-12 text-yellow-400" />
+            Kotak Mystery
+            <Sparkles className="w-12 h-12 text-yellow-400" />
+          </h1>
+          <p className="text-xl text-purple-200">Selamat datang, <span className="font-bold text-yellow-400">{userId}</span>!</p>
+          <p className="text-lg text-purple-300 mt-2">Pilih kotak dan menangkan hadiah hingga Rp 500.000!</p>
+        </div>
 
-      <div className="max-w-6xl w-full relative z-10">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-2">🎁 Kotak Hadiah Misteri 🎁</h1>
-          <p className="text-yellow-300 mb-3 text-lg font-semibold">Selamat datang, <span className="text-white">{userId}</span>! 👋</p>
-          <p className="text-purple-200 mb-8 text-lg">Pilih salah satu kotak dan menangkan hadiah menarik! ✨</p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
-            {shuffledPrizes.map((prize) => {
-              const isOpened = openedBoxes.includes(prize.id);
-              const isSelected = selectedBox === prize.id && isAnimating;
-              
-              return (
-                <div
-                  key={prize.id}
-                  onClick={() => handleBoxClick(prize)}
-                  className={`relative transition-all duration-500 ${
-                    isOpened ? 'opacity-30 scale-90' : 'cursor-pointer hover:scale-105 hover:-translate-y-2'
-                  } ${isSelected ? 'scale-110 rotate-6' : ''}`}
-                >
-                  <div className="aspect-square bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden border-4 border-yellow-300">
-                    {isOpened ? (
-                      <div className="relative text-center">
-                        <div className="text-5xl md:text-6xl mb-2">{prize.icon}</div>
-                        <div className="text-white font-bold text-xs md:text-sm px-2">{prize.title}</div>
-                      </div>
-                    ) : (
-                      <div className="relative text-center">
-                        <Gift size={50} className="text-white mb-2 mx-auto" />
-                        <div className="text-white font-bold text-2xl">?</div>
-                      </div>
-                    )}
-
-                    {!isOpened && (
-                      <>
-                        <Sparkles className="absolute top-2 right-2 text-yellow-200" size={20} />
-                        <Sparkles className="absolute bottom-2 left-2 text-yellow-200" size={20} />
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
+            <p className="text-purple-300 text-sm mb-1">Total Kemenangan</p>
+            <p className="text-3xl font-bold text-yellow-400">{formatRupiah(totalWinnings)}</p>
           </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
+            <p className="text-purple-300 text-sm mb-1">Kotak Dibuka</p>
+            <p className="text-3xl font-bold text-white">{openedBoxes.length} / {boxes.length}</p>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center">
+            <p className="text-purple-300 text-sm mb-1">Kotak Tersisa</p>
+            <p className="text-3xl font-bold text-green-400">{boxes.length - openedBoxes.length}</p>
+          </div>
+        </div>
 
-          <div className="flex gap-4 justify-center flex-wrap">
-            {openedBoxes.length > 0 && (
-              <button
-                onClick={handleReset}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl hover:scale-105"
+        {currentReward && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
+            <div className="bg-gradient-to-br from-yellow-400 via-orange-500 to-pink-500 rounded-3xl p-12 text-center transform scale-100 animate-bounce shadow-2xl">
+              <Trophy className="w-24 h-24 text-white mx-auto mb-4" />
+              <h2 className="text-4xl font-bold text-white mb-2">Selamat!</h2>
+              <p className="text-6xl font-bold text-white mb-4">{formatRupiah(currentReward)}</p>
+              <Sparkles className="w-12 h-12 text-white mx-auto animate-spin" />
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          {boxes.map((box) => {
+            const isOpened = openedBoxes.includes(box.id);
+            return (
+              <div
+                key={box.id}
+                onClick={() => openBox(box.id)}
+                className={`relative aspect-square rounded-2xl cursor-pointer transform transition-all duration-300 ${
+                  isOpened 
+                    ? 'bg-gradient-to-br from-green-500 to-emerald-600 scale-95' 
+                    : 'bg-gradient-to-br from-purple-600 to-pink-600 hover:scale-105 hover:shadow-2xl'
+                } ${isOpening ? 'pointer-events-none' : ''}`}
               >
-                <RefreshCw size={24} />
-                Reset Semua Kotak
-              </button>
-            )}
-            
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                  {!isOpened ? (
+                    <>
+                      <Gift className="w-16 h-16 md:w-20 md:h-20 text-white mb-2" />
+                      <p className="text-white font-bold text-lg">#{box.id}</p>
+                    </>
+                  ) : (
+                    <>
+                      <Trophy className="w-12 h-12 md:w-16 md:h-16 text-white mb-2" />
+                      <p className="text-white font-bold text-xs md:text-sm text-center">
+                        {formatRupiah(box.prize)}
+                      </p>
+                    </>
+                  )}
+                </div>
+                {!isOpened && (
+                  <div className="absolute inset-0 bg-white/0 hover:bg-white/10 rounded-2xl transition-all" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex gap-4 justify-center">
+          {openedBoxes.length === boxes.length && (
             <button
-              onClick={() => setShowAllPrizes(true)}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl hover:scale-105"
+              onClick={resetGame}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-8 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg"
             >
-              <Gift size={24} />
-              Tampilkan Semua Hadiah
+              🎮 Main Lagi
             </button>
-          </div>
+          )}
+          <button
+            onClick={() => {
+              setIsLoggedIn(false);
+              setUserId('');
+              setBoxes([]);
+              setOpenedBoxes([]);
+              setTotalWinnings(0);
+            }}
+            className="bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-xl hover:scale-105 transition-all duration-300"
+          >
+            🚪 Keluar
+          </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default MysteryBox;
+}
