@@ -53,6 +53,7 @@
         ];
         
         var state = {
+            showWelcome: true,
             userId: '',
             isLoggedIn: false,
             shuffledPrizes: [],
@@ -93,6 +94,33 @@
             var app = document.getElementById('app');
             app.innerHTML = '';
             
+            if (state.showWelcome) {
+                var container = el('div', 'max-w-2xl w-full text-center relative z-10');
+                container.innerHTML = '<div class="mb-8"><h1 class="text-5xl md:text-7xl font-black text-yellow-400 mb-2" style="text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);">KISAHSLOT</h1></div>' +
+                    '<div class="mb-8"><div class="text-7xl md:text-8xl mb-4">' + emojis.gift + '</div>' +
+                    '<h2 class="text-4xl md:text-5xl font-black text-yellow-400 mb-2">MYSTERY BOX</h2></div>' +
+                    '<div class="max-w-md mx-auto bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border-2 border-yellow-400/50 mb-6">' +
+                    '<p class="text-white text-lg font-bold mb-2">' + emojis.gift + ' Selamat Datang di Mystery Box ' + emojis.gift + '</p>' +
+                    '<p class="text-yellow-200 text-sm mb-4">Tekan Mulai & Masukkan User ID</p>' +
+                    '<p class="text-white/80 text-xs">Menangkan Hadiah Fantastis!</p></div>' +
+                    '<button id="showPrizesBtn" class="mb-4 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-full hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-xl hover:scale-105 text-lg">' + emojis.gift + ' Tampilkan Hadiah</button>' +
+                    '<button id="startBtn" class="block w-full max-w-md mx-auto px-10 py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-2xl hover:scale-105 text-xl">' + String.fromCodePoint(0x1F680) + ' MULAI SEKARANG</button>';
+                
+                app.appendChild(container);
+                
+                document.getElementById('startBtn').onclick = function() {
+                    state.showWelcome = false;
+                    render();
+                };
+                
+                document.getElementById('showPrizesBtn').onclick = function() {
+                    state.showWelcome = false;
+                    state.showAllPrizes = true;
+                    render();
+                };
+                return;
+            }
+            
             if (!state.isLoggedIn) {
                 var container = el('div', 'max-w-6xl w-full text-center relative z-10');
                 container.innerHTML = '<h1 class="text-4xl md:text-6xl font-bold text-white mb-4">' + emojis.gift + ' Kotak Hadiah Misteri ' + emojis.gift + '</h1>' +
@@ -129,7 +157,13 @@
                 html += '</div><button id="backBtn" class="px-8 py-4 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all duration-300 shadow-xl hover:scale-105 text-lg mx-auto block">' + emojis.back + ' Kembali</button>';
                 container.innerHTML = html;
                 app.appendChild(container);
-                document.getElementById('backBtn').onclick = function() { state.showAllPrizes = false; render(); };
+                document.getElementById('backBtn').onclick = function() { 
+                    state.showAllPrizes = false;
+                    if (!state.isLoggedIn) {
+                        state.showWelcome = true;
+                    }
+                    render(); 
+                };
                 return;
             }
 
