@@ -20,9 +20,15 @@
         @keyframes bounce { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(5px); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes blink { 0%, 50%, 100% { opacity: 1; } 25%, 75% { opacity: 0.3; } }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 0 0 40px rgba(251, 191, 36, 0.3); } 50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.8), 0 0 80px rgba(251, 191, 36, 0.5); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-bounce { animation: bounce 1s infinite; }
         .animate-pulse { animation: pulse 2s infinite; }
         .animate-spin { animation: spin 3s linear infinite; }
+        .animate-blink { animation: blink 1.5s infinite; }
+        .animate-glow { animation: glow 2s infinite; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
         button { -webkit-touch-callout: none; user-select: none; }
         input { font-size: 16px !important; }
     </style>
@@ -116,14 +122,18 @@
             
             if (state.showWelcome) {
                 var container = el('div', 'max-w-2xl w-full text-center relative z-10 px-4');
-                container.innerHTML = '<div class="mb-6"><h1 class="text-4xl sm:text-5xl md:text-7xl font-black text-yellow-400 mb-2" style="text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);">WAWASAN4D</h1></div>' +
-                    '<div class="mb-6"><div class="text-6xl sm:text-7xl md:text-8xl mb-3">' + emojis.gift + '</div>' +
-                    '<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-yellow-400 mb-2">MYSTERY BOX</h2></div>' +
-                    '<div class="max-w-md mx-auto bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-lg rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-yellow-400/50 mb-6">' +
+                container.innerHTML = '<div class="mb-6 sm:mb-8">' +
+                    '<div class="inline-block bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-1 rounded-3xl animate-glow mb-4">' +
+                    '<div class="bg-gradient-to-br from-purple-900 to-indigo-900 px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-6 rounded-3xl">' +
+                    '<h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-yellow-400 animate-blink" style="text-shadow: 0 0 30px rgba(251, 191, 36, 0.8), 0 0 60px rgba(251, 191, 36, 0.5);">WAWASAN4D</h1>' +
+                    '</div></div></div>' +
+                    '<div class="mb-6 animate-float"><div class="text-6xl sm:text-7xl md:text-8xl mb-3 filter drop-shadow-2xl">' + emojis.gift + '</div>' +
+                    '<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-yellow-400 mb-2" style="text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);">MYSTERY BOX</h2></div>' +
+                    '<div class="max-w-md mx-auto bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-lg rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-yellow-400/50 mb-6 animate-pulse">' +
                     '<p class="text-white text-base sm:text-lg font-bold mb-2">' + emojis.gift + ' Selamat Datang di Mystery Box ' + emojis.gift + '</p>' +
                     '<p class="text-yellow-200 text-sm mb-3">Tekan Mulai & Masukkan User ID</p>' +
                     '<p class="text-white/80 text-xs">Menangkan Hadiah Fantastis!</p></div>' +
-                    '<button id="startBtn" class="block w-full max-w-md mx-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black rounded-full hover:from-yellow-500 hover:to-orange-600 active:scale-95 transition-all duration-300 shadow-2xl text-lg sm:text-xl">' + String.fromCodePoint(0x1F680) + ' MULAI SEKARANG</button>';
+                    '<button id="startBtn" class="block w-full max-w-md mx-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-black font-black rounded-full hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 active:scale-95 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/50 text-lg sm:text-xl animate-pulse" style="box-shadow: 0 10px 40px rgba(251, 191, 36, 0.5);">' + String.fromCodePoint(0x1F680) + ' MULAI SEKARANG</button>';
                 
                 app.appendChild(container);
                 
